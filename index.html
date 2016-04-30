@@ -1,0 +1,99 @@
+<!DOCTYPE HTML>
+<html lang=en>
+	<head>
+  	<meta charset=UTF-8>
+  	<meta name=viewport content="width=device-width, initial-scale=1">
+  	<title>boilerplate</title>
+
+    <link rel=stylesheet href='//fonts.googleapis.com/css?family=Lato:300,700'>
+    <link rel=stylesheet href='vendor/c3-0.4.10/c3.min.css'>
+
+    <!-- <link rel=stylesheet href="style/sheet.css"> -->
+
+    <style></style>
+  </head>
+
+  <body class="single">
+    <main role=main id=main class=main>
+      <header>
+        <h1></h1>
+      </header>
+      <div>
+        <div class="chart">
+          <div id="chart" class="c3"></div>
+        </div>
+      </div>
+      <footer>
+      </footer>
+    </main>
+
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="vendor/c3-0.4.10/c3.min.js" charset="utf-8"></script>
+    
+    <!-- // <script src="scripts/scripts.js"></script> -->
+    <script>
+    // Timestamp,CashVariance,CardVariance,TotalVariance,CashPercentage,CardPercentage
+
+      var string = "";
+      var data = d3.csv("data/20160426_streamtank_percentage_sans.csv");
+      var columns = [["Cash %"],["Card %"],["Timestamp"]];
+      var count = 0;
+      var length = 0;
+
+      var done = function () {      
+
+        var chart = c3.generate({
+            data: {
+                columns: [
+                  ["Cash %", 50],
+                  ["Card %", 50],
+                ],
+                type : 'donut'
+            },
+            donut: {
+                title: "% variance"
+            }
+        });
+        
+        setInterval(function () {
+          if (count < length) {
+            count += 1;
+          } else {
+            count = 1;
+          }
+          
+          chart.load({
+            columns: [
+              ["Cash %", columns[0][count]],
+              ["Card %", columns[1][count]]
+            ]
+          });
+
+          document.querySelector(".c3-chart-arcs-title").innerHTML = columns[2][count];
+            
+        }, 1500);
+      }
+
+      var chart = function () {      
+
+
+      }
+
+
+
+      data.get(function(error, rows) {
+        for (row in rows) {
+          var current = rows[row];
+
+          columns[0].push(current.CashPercentage);
+          columns[1].push(current.CardPercentage);
+          columns[2].push(current.Timestamp);
+        }
+        length = rows.length;
+
+        done();
+      });
+    </script>
+  </body>
+</html>
